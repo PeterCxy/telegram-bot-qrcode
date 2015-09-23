@@ -1,0 +1,20 @@
+{
+	"name": "telegram-bot-qrcode",
+	"version": "1.0.0",
+	"author": "PeterCxy",
+	"description": "QR code plugin for telegram-bot-coffee",
+	"license": "GPL-3.0.0",
+	"homepage": "https://github.com/PeterCxy/telegram-bot-qrcode",
+	"dependencies": {
+		"telegram-bot-coffee": ">=1.0.0",
+		"request": ">=2.45.0",
+		"korubaku": ">=1.0.1",
+		"qrcode-reader": ">=0.0.5",
+		"jpg-stream": ">=1.1.1",
+		"concat-frames": ">=1.0.3"
+	},
+	"devDependencies": {
+		"coffee-script": ">=1.9.0"
+	},
+	"main": "./lib/functions"
+}
