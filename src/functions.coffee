@@ -14,8 +14,11 @@ exports.setup = (telegram, store, server) ->
 			desc: 'Decode QR code'
 			num: 0
 			act: (msg) ->
-				telegram.sendMessage msg.chat.id, 'Now send me the picture you want to decode'
-				server.grabInput msg.chat.id, msg.from.id, pkg.name, 'decode'
+				if !msg.reply_to_message?
+					telegram.sendMessage msg.chat.id, 'Now send me the picture you want to decode'
+					server.grabInput msg.chat.id, msg.from.id, pkg.name, 'decode'
+				else
+					decode msg.reply_to_message, telegram, server
 	]
 
 exports.input = (cmd, msg, telegram, store, server) ->
