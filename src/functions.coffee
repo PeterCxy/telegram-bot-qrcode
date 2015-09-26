@@ -2,14 +2,30 @@ pkg = require '../package.json'
 {korubaku} = require 'korubaku'
 JPEGDecoder = require 'jpg-stream/decoder'
 QrCodeReader = require 'qrcode-reader'
+QRCode = require 'qrcode'
 concat = require 'concat-frames'
 request = require 'request'
+fs = require 'fs'
 
 exports.name = 'qrcode'
 exports.desc = 'QR encoder and decoder'
 
 exports.setup = (telegram, store, server) ->
 	[
+			cmd: 'qrencode'
+			desc: 'Encode text into QR code'
+			typing: yes
+			args: '<text>'
+			num: -1
+			act: (msg, args) ->
+				if !msg.reply_to_message?
+					str = args.join(' ').trim()
+					if str isnt ''
+						console.log str
+						encode str, msg, telegram
+				else
+					encode msg.reply_to_message.text, msg, telegram
+		,
 			cmd: 'qrdecode'
 			desc: 'Decode QR code'
 			num: 0
@@ -24,6 +40,24 @@ exports.setup = (telegram, store, server) ->
 exports.input = (cmd, msg, telegram, store, server) ->
 	if cmd is 'decode'
 		decode msg, telegram, server
+
+encode = (text, msg, telegram) ->
+	file = "/tmp/qrcode_#{Date.now()}.png"
+		
+	try
+		# QRCode will fail with Korubaku
+		QRCode.save file, text, (err, written) ->
+			console.log "written = #{written}"
+
+			if !err?
+				stream = fs.createReadStream file
+				telegram.sendPhoto msg.chat.id, stream, msg.message_id, (err) ->
+					fs.unlink file
+			else
+				telegram.sendMessage msg.chat.id, 'Encode failure', msg.message_id
+	catch e
+		console.log e
+
 
 decode = (msg, telegram, server) ->
 	korubaku (ko) ->
