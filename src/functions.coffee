@@ -31,7 +31,7 @@ exports.setup = (telegram, store, server) ->
 			num: 0
 			act: (msg) ->
 				if !msg.reply_to_message?
-					telegram.sendMessage msg.chat.id, 'Now send me the picture you want to decode'
+					telegram.sendMessage msg.chat.id, 'Now send me the picture you want to decode', msg.message_id
 					server.grabInput msg.chat.id, msg.from.id, pkg.name, 'decode'
 				else
 					decode msg.reply_to_message, telegram, server
@@ -78,14 +78,14 @@ decode = (msg, telegram, server) ->
 					if frames.length >= 1
 						qr = new QrCodeReader
 						qr.callback = (result) ->
-							telegram.sendMessage msg.chat.id, result
+							telegram.sendMessage msg.chat.id, result, msg.message_id
 						try
 							qr.decode frames[0], frames[0].pixels
 						catch e
 							console.log e
-							telegram.sendMessage msg.chat.id, 'Decode failure.'
+							telegram.sendMessage msg.chat.id, 'Decode failure.', msg.message_id
 				))
 		else
-			telegram.sendMessage msg.chat.id, 'Decode failure. File size may have exceeded the maximum of 200K (Telegram-compressed)'
+			telegram.sendMessage msg.chat.id, 'Decode failure. File size may have exceeded the maximum of 200K (Telegram-compressed)', msg.message_id
 	
 		server.releaseInput msg.chat.id, msg.from.id
